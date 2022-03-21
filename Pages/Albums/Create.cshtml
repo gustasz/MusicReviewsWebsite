@@ -11,26 +11,26 @@
 <hr />
 <div class="row">
     <div class="col-md-4">
-        <form method="post">
+        <form enctype="multipart/form-data" method="post">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="Album.Name" class="control-label"></label>
-                <input asp-for="Album.Name" class="form-control" />
-                <span asp-validation-for="Album.Name" class="text-danger"></span>
+             <div class="form-group">
+                <label asp-for="AlbumVM.ArtistId" class="control-label"></label>
+                <select asp-for="AlbumVM.ArtistId" class ="form-control" asp-items="ViewBag.ArtistId"></select>
             </div>
             <div class="form-group">
-                <label asp-for="Album.ReleaseDate" class="control-label"></label>
-                <input asp-for="Album.ReleaseDate" class="form-control" />
-                <span asp-validation-for="Album.ReleaseDate" class="text-danger"></span>
+                <label asp-for="AlbumVM.Name" class="control-label"></label>
+                <input asp-for="AlbumVM.Name" class="form-control" />
+                <span asp-validation-for="AlbumVM.Name" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="Album.CoverPath" class="control-label"></label>
-                <input asp-for="Album.CoverPath" class="form-control" />
-                <span asp-validation-for="Album.CoverPath" class="text-danger"></span>
+                <label asp-for="AlbumVM.ReleaseDate" class="control-label"></label>
+                <input asp-for="AlbumVM.ReleaseDate" type="date" class="form-control" />
+                <span asp-validation-for="AlbumVM.ReleaseDate" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="Album.ArtistId" class="control-label"></label>
-                <select asp-for="Album.ArtistId" class ="form-control" asp-items="ViewBag.ArtistId"></select>
+                <label asp-for="AlbumVM.FormFile" class="control-label"></label>
+                <input asp-for="AlbumVM.FormFile" type="file" class="form-control">
+                <span asp-validation-for="AlbumVM.FormFile" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary" />

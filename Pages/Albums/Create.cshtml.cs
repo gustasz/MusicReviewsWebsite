@@ -13,10 +13,14 @@ namespace MusicReviewsWebsite.Pages.Albums
     public class CreateModel : PageModel
     {
         private readonly MusicReviewsWebsite.Data.MusicContext _context;
+        private readonly IWebHostEnvironment _environment;
 
-        public CreateModel(MusicReviewsWebsite.Data.MusicContext context)
+        private string[] permittedExtensions = { ".png", ".jpg", ".jpeg", ".png"};
+
+        public CreateModel(MusicReviewsWebsite.Data.MusicContext context, IWebHostEnvironment environment)
         {
             _context = context;
+            _environment = environment;
         }
 
         public IActionResult OnGet()
@@ -31,23 +35,40 @@ namespace MusicReviewsWebsite.Pages.Albums
         }
 
         [BindProperty]
-        public Album Album { get; set; }
+        public AlbumVM AlbumVM { get; set; }
 
-        // To protect from overposting attacks, see https://aka.ms/RazorPagesCRUD
         public async Task<IActionResult> OnPostAsync()
         {
-            var emptyAlbum = new Album();
-
-            if (await TryUpdateModelAsync<Album>(
-                emptyAlbum,
-                "album",
-                a => a.Name, a => a.ReleaseDate, a => a.CoverPath))
+            if (!ModelState.IsValid)
             {
-                _context.Album.Add(emptyAlbum);
+                return Page();
+            }
+            string filePath = Path.Combine("Images", "Temp", "defaultAlbumPicture.png");
+            var formFile = AlbumVM.FormFile;
+            if (formFile != null)
+            {
+                var ext = Path.GetExtension(formFile.FileName).ToLowerInvariant();
+
+                if (!string.IsNullOrEmpty(ext) && permittedExtensions.Contains(ext))
+                {
+                    var fileName = Path.GetRandomFileName() + ext;
+                    filePath = Path.Combine("Images",
+                        "Album Covers",
+                        fileName);
+                    var fullFilePath = Path.Combine(_environment.WebRootPath, filePath);
+
+
+                    using (var stream = System.IO.File.Create(fullFilePath))
+                    {
+                        await formFile.CopyToAsync(stream);
+                    }
+                }
+            }
+                var entry = _context.Add(new Album());
+                AlbumVM.CoverPath = filePath;
+                entry.CurrentValues.SetValues(AlbumVM);
                 await _context.SaveChangesAsync();
                 return RedirectToPage("./Index");
-            }
-            return Page();
         }
     }
 }

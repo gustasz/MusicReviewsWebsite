@@ -4,7 +4,21 @@
     ViewData["Title"] = "Home page";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div class="row row-cols-1 row-cols-md-4 g-4">
+    @foreach (var item in Model.Albums)
+    {
+    <div class="col">
+    <div class="card h-100">
+      <img src="~/@item.CoverPath" class="card-img-top" alt="...">
+      <div class="card-body">
+        <h5 class="card-title">
+            <a asp-page="/Albums/Profile" asp-route-id="@item.Id">@Html.DisplayFor(modelItem => item.Name)</a>
+            </h5>
+        <p class="card-text">@Html.DisplayFor(modelItem => item.Artist.Name)</p>
+        <p class="card-text">@item.GetRating()</p>
+        <p class="card-text"><small class="text-muted">@Html.DisplayFor(modelItem => item.ReleaseDate)</small></p>       
+      </div>
+    </div>
+  </div>        
+    }
 </div>

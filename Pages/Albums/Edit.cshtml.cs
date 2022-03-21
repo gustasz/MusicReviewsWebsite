@@ -14,14 +14,17 @@ namespace MusicReviewsWebsite.Pages.Albums
     public class EditModel : PageModel
     {
         private readonly MusicReviewsWebsite.Data.MusicContext _context;
+        private readonly IWebHostEnvironment _environment;
 
-        public EditModel(MusicReviewsWebsite.Data.MusicContext context)
+        private string[] permittedExtensions = { ".png", ".jpg", ".jpeg", ".png" };
+        public EditModel(MusicReviewsWebsite.Data.MusicContext context, IWebHostEnvironment environment)
         {
             _context = context;
+            _environment = environment;
         }
 
         [BindProperty]
-        public Album Album { get; set; }
+        public AlbumVM AlbumVM { get; set; }
 
         public async Task<IActionResult> OnGetAsync(int? id)
         {
@@ -30,13 +33,24 @@ namespace MusicReviewsWebsite.Pages.Albums
                 return NotFound();
             }
 
-            Album = await _context.Album
+            Album album = await _context.Album
                 .Include(a => a.Artist).FirstOrDefaultAsync(m => m.Id == id);
 
-            if (Album == null)
+            if (album == null)
             {
                 return NotFound();
             }
+
+            AlbumVM = new AlbumVM
+            {
+                Id = album.Id,
+                Name = album.Name,
+                ReleaseDate = album.ReleaseDate,
+                CoverPath = album.CoverPath,
+                ArtistId = album.ArtistId,
+                Artist = album.Artist
+            };
+
            ViewData["ArtistId"] = _context.Artist.Select(a =>
                                                         new SelectListItem
                                                         {
@@ -50,21 +64,55 @@ namespace MusicReviewsWebsite.Pages.Albums
         {
             var albumToUpdate = await _context.Album.FindAsync(id);
 
-            if (albumToUpdate == null)
+            if (!ModelState.IsValid)
             {
-                return NotFound();
+                ViewData["ArtistId"] = _context.Artist.Select(a =>
+                                             new SelectListItem
+                                             {
+                                                 Value = a.Id.ToString(),
+                                                 Text = a.Name
+                                             }).ToList();
+                return Page();
+            }
+            
+            var formFile = AlbumVM.FormFile;
+            if (formFile != null && formFile.Length > 0)
+            {
+                var ext = Path.GetExtension(formFile.FileName).ToLowerInvariant();
+
+                if (!string.IsNullOrEmpty(ext) && permittedExtensions.Contains(ext))
+                {
+                    if (albumToUpdate.CoverPath != Path.Combine("Images", "Temp", "defaultAlbumPicture.png") && !string.IsNullOrEmpty(albumToUpdate.CoverPath))
+                    {
+                        var fullPath = Path.Combine(_environment.WebRootPath, albumToUpdate.CoverPath);
+                        if (System.IO.File.Exists(fullPath))
+                        {
+                            System.IO.File.Delete(fullPath);
+                        }
+                    }
+
+                    var fileName = Path.GetRandomFileName() + ext;
+                    var filePath = Path.Combine("Images",
+                        "Album Covers",
+                        fileName);
+                    var fullFilePath = Path.Combine(_environment.WebRootPath, filePath);
+
+                    using (var stream = System.IO.File.Create(fullFilePath))
+                    {
+                        await formFile.CopyToAsync(stream);
+                    }
+                    albumToUpdate.CoverPath = filePath;
+                }
             }
 
-            if (await TryUpdateModelAsync<Album>(
-                albumToUpdate,
-                "album",
-                a => a.Name, a => a.ReleaseDate, a => a.CoverPath, a => a.ArtistId))
-            {
-                await _context.SaveChangesAsync();
-                return RedirectToPage("./Index");
-            }
+            albumToUpdate.Name = AlbumVM.Name;
+            albumToUpdate.ReleaseDate = AlbumVM.ReleaseDate;
+            albumToUpdate.ArtistId = AlbumVM.ArtistId;
+            albumToUpdate.Artist = AlbumVM.Artist;
 
-            return Page();
+            _context.Update(albumToUpdate);
+            await _context.SaveChangesAsync();
+            return RedirectToPage("./Index");
         }
 
         private bool AlbumExists(int id)

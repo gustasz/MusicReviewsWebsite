@@ -1,0 +1,26 @@
+﻿@page "{id}"
+@model MusicReviewsWebsite.Pages.Albums.ProfileModel
+@{
+    ViewData["Title"] = "Profile";
+}
+
+<div class="container">
+    <div class="row">
+        <div class="col-4">
+            <img src="~/@Model.Album.CoverPath" class="card-img-top" alt="...">
+        </div>
+        <div class="col-8">
+            <h1>@Html.DisplayFor(model => model.Album.Name)</h1>
+            <dl class="row">
+                <dt class="col-sm-3">Artist</dt>
+                <dd class="col-sm-9">@Html.DisplayFor(model => model.Album.Artist.Name)</dd>
+
+                <dt class="col-sm-3">@Html.DisplayNameFor(model => model.Album.ReleaseDate)</dt>
+                <dd class="col-sm-9">@Html.DisplayFor(model => model.Album.ReleaseDate)</dd>
+
+                <dt class="col-sm-3">Rating</dt>
+                <dd class="col-sm-9">@Model.Album.GetRating()</dd>
+            </dl>
+        </div>
+    </div>
+</div>

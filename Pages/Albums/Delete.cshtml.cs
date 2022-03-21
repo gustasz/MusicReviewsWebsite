@@ -14,12 +14,15 @@ namespace MusicReviewsWebsite.Pages.Albums
     {
         private readonly MusicReviewsWebsite.Data.MusicContext _context;
         private readonly ILogger<DeleteModel> _logger;
+        private readonly IWebHostEnvironment _environment;
 
         public DeleteModel(MusicReviewsWebsite.Data.MusicContext context,
-                            ILogger<DeleteModel> logger)
+                            ILogger<DeleteModel> logger,
+                            IWebHostEnvironment environment)
         {
             _context = context;
             _logger = logger;
+            _environment = environment;
         }
 
         [BindProperty]
@@ -69,6 +72,14 @@ namespace MusicReviewsWebsite.Pages.Albums
             {
                 _context.Album.Remove(album);
                 await _context.SaveChangesAsync();
+                if (album.CoverPath != Path.Combine("Images", "Temp", "defaultAlbumPicture.png") && !string.IsNullOrEmpty(album.CoverPath))
+                {
+                    var fullPath = Path.Combine(_environment.WebRootPath, album.CoverPath);
+                    if (System.IO.File.Exists(fullPath))
+                    {
+                        System.IO.File.Delete(fullPath);
+                    }
+                }
                 return RedirectToPage("./Index");
             }
             catch (DbUpdateException ex)
