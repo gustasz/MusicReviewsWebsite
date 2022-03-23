@@ -1,17 +1,18 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using MusicReviewsWebsite.Data;
 using MusicReviewsWebsite.Models;
 
-namespace MusicReviewsWebsite.Pages.Artists
+namespace MusicReviewsWebsite.Pages.Roles
 {
-    [Authorize(Roles = "Admin,Moderator")]
+    [Authorize(Roles = "Admin")]
     public class IndexModel : PageModel
     {
         private readonly MusicReviewsWebsite.Data.MusicContext _context;
@@ -21,11 +22,11 @@ namespace MusicReviewsWebsite.Pages.Artists
             _context = context;
         }
 
-        public IList<Artist> Artist { get;set; }
+        public IList<IdentityUser> Users { get; set; }
 
         public async Task OnGetAsync()
         {
-            Artist = await _context.Artist.ToListAsync();
+            Users = await _context.Users.ToListAsync();
         }
     }
 }

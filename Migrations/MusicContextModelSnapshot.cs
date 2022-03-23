@@ -34,7 +34,7 @@ namespace MusicReviewsWebsite.Migrations
 
                     b.HasIndex("ArtistsId");
 
-                    b.ToTable("AlbumArtist");
+                    b.ToTable("AlbumArtist", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -265,7 +265,7 @@ namespace MusicReviewsWebsite.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Album");
+                    b.ToTable("Album", (string)null);
                 });
 
             modelBuilder.Entity("MusicReviewsWebsite.Models.Artist", b =>
@@ -288,7 +288,7 @@ namespace MusicReviewsWebsite.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Artist");
+                    b.ToTable("Artist", (string)null);
                 });
 
             modelBuilder.Entity("AlbumArtist", b =>

@@ -14,6 +14,7 @@ namespace MusicReviewsWebsite.Models
         public string CoverPath { get; set; }
 
         [DisplayName("Artist")]
+        [Required]
         public string[] ArtistIds { get; set; }
         public List<Artist> Artists { get; set; } = new List<Artist>();
 
