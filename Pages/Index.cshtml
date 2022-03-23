@@ -14,7 +14,7 @@
         <h5 class="card-title">
             <a asp-page="/Albums/Profile" asp-route-id="@item.Id">@Html.DisplayFor(modelItem => item.Name)</a>
             </h5>
-        <p class="card-text">@Html.DisplayFor(modelItem => item.Artist.Name)</p>
+        <p class="card-text">@item.GetArtists()</p>
         <p class="card-text">@item.GetRating()</p>
         <p class="card-text"><small class="text-muted">@Html.DisplayFor(modelItem => item.ReleaseDate)</small></p>       
       </div>

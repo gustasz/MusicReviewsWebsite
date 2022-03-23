@@ -28,7 +28,7 @@ namespace MusicReviewsWebsite.Data
             context.Artist.AddRange(artists);
             context.SaveChanges();
 
-            var albums = new Album[]
+        /*    var albums = new Album[]
             {
             new Album{Name="Whole Lotta Red",ReleaseDate=DateTime.Parse("2020-12-25"),ArtistId = 1},
             new Album{Name="Worlds",ReleaseDate=DateTime.Parse("2014-08-12"),ArtistId = 2},
@@ -38,7 +38,7 @@ namespace MusicReviewsWebsite.Data
             };
 
             context.Album.AddRange(albums);
-            context.SaveChanges();
+            context.SaveChanges();*/
 
         }
     }

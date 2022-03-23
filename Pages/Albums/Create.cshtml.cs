@@ -64,11 +64,24 @@ namespace MusicReviewsWebsite.Pages.Albums
                     }
                 }
             }
-                var entry = _context.Add(new Album());
-                AlbumVM.CoverPath = filePath;
-                entry.CurrentValues.SetValues(AlbumVM);
-                await _context.SaveChangesAsync();
-                return RedirectToPage("./Index");
+
+            var newAlbum = new Album
+            {
+                Name = AlbumVM.Name,
+                ReleaseDate = AlbumVM.ReleaseDate,
+                CoverPath = filePath
+            };
+
+            // assign artists
+            for (int i = 0; i < AlbumVM.ArtistIds.Count(); i++)
+            {
+                var artist = _context.Artist.SingleOrDefault(a => a.Id == Int32.Parse(AlbumVM.ArtistIds[i]));
+                newAlbum.Artists.Add(artist);
+            }
+
+            _context.Add(newAlbum);
+            await _context.SaveChangesAsync();
+            return RedirectToPage("./Index");
         }
     }
 }

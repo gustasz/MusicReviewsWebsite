@@ -19,7 +19,7 @@ namespace MusicReviewsWebsite.Pages
 
         public async Task OnGetAsync()
         {
-            Albums = await _context.Album.Include(a => a.Artist).OrderByDescending(a => a.ReleaseDate).Take(8).ToListAsync();
+            Albums = await _context.Album.Include(a => a.Artists).OrderByDescending(a => a.ReleaseDate).Take(8).ToListAsync();
         }
     }
 }

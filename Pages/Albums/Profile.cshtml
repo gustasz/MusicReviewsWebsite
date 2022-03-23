@@ -13,7 +13,7 @@
             <h1>@Html.DisplayFor(model => model.Album.Name)</h1>
             <dl class="row">
                 <dt class="col-sm-3">Artist</dt>
-                <dd class="col-sm-9">@Html.DisplayFor(model => model.Album.Artist.Name)</dd>
+                <dd class="col-sm-9">@Model.Album.GetArtists()</dd>
 
                 <dt class="col-sm-3">@Html.DisplayNameFor(model => model.Album.ReleaseDate)</dt>
                 <dd class="col-sm-9">@Html.DisplayFor(model => model.Album.ReleaseDate)</dd>

@@ -14,8 +14,8 @@ namespace MusicReviewsWebsite.Models
         public string CoverPath { get; set; }
 
         [DisplayName("Artist")]
-        public int ArtistId { get; set; }
-        public Artist Artist { get; set; }
+        public string[] ArtistIds { get; set; }
+        public List<Artist> Artists { get; set; } = new List<Artist>();
 
         [DisplayName("Cover")]
         public IFormFile FormFile { get; set; }

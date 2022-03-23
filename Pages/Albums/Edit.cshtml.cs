@@ -34,7 +34,7 @@ namespace MusicReviewsWebsite.Pages.Albums
             }
 
             Album album = await _context.Album
-                .Include(a => a.Artist).FirstOrDefaultAsync(m => m.Id == id);
+                .Include(a => a.Artists).FirstOrDefaultAsync(m => m.Id == id);
 
             if (album == null)
             {
@@ -47,22 +47,28 @@ namespace MusicReviewsWebsite.Pages.Albums
                 Name = album.Name,
                 ReleaseDate = album.ReleaseDate,
                 CoverPath = album.CoverPath,
-                ArtistId = album.ArtistId,
-                Artist = album.Artist
+                Artists = album.Artists
             };
+
+            // show already selected artists
+            AlbumVM.ArtistIds = new string[album.Artists.Count];
+            for(int i = 0; i < album.Artists.Count; i++)
+            {
+                AlbumVM.ArtistIds[i] = album.Artists[i].Id.ToString();
+            }
 
            ViewData["ArtistId"] = _context.Artist.Select(a =>
                                                         new SelectListItem
                                                         {
                                                             Value = a.Id.ToString(),
                                                             Text = a.Name
-                                                        }).ToList();
+                                                        }).ToList().OrderBy(x => x.Text);
             return Page();
         }
 
         public async Task<IActionResult> OnPostAsync(int id)
         {
-            var albumToUpdate = await _context.Album.FindAsync(id);
+            var albumToUpdate = await _context.Album.Include(a => a.Artists).SingleOrDefaultAsync(a => a.Id == id);
 
             if (!ModelState.IsValid)
             {
@@ -71,7 +77,7 @@ namespace MusicReviewsWebsite.Pages.Albums
                                              {
                                                  Value = a.Id.ToString(),
                                                  Text = a.Name
-                                             }).ToList();
+                                             }).ToList().OrderBy(x => x.Text);
                 return Page();
             }
             
@@ -107,17 +113,17 @@ namespace MusicReviewsWebsite.Pages.Albums
 
             albumToUpdate.Name = AlbumVM.Name;
             albumToUpdate.ReleaseDate = AlbumVM.ReleaseDate;
-            albumToUpdate.ArtistId = AlbumVM.ArtistId;
-            albumToUpdate.Artist = AlbumVM.Artist;
+
+            albumToUpdate.Artists = new List<Artist>(); // remove all old selected artists
+            foreach (var itemId in AlbumVM.ArtistIds)
+            {
+                var artist = await _context.Artist.FindAsync(Int32.Parse(itemId));
+                albumToUpdate.Artists.Add(artist);
+            }
 
             _context.Update(albumToUpdate);
             await _context.SaveChangesAsync();
             return RedirectToPage("./Index");
-        }
-
-        private bool AlbumExists(int id)
-        {
-            return _context.Album.Any(e => e.Id == id);
         }
     }
 }
