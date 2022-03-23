@@ -21,7 +21,7 @@ namespace MusicReviewsWebsite.Pages.Albums
                 return NotFound();
             }
 
-            Album = await _context.Album.Include(a => a.Artist).AsNoTracking().FirstOrDefaultAsync(a => a.Id == id);
+            Album = await _context.Album.Include(a => a.Artists).AsNoTracking().FirstOrDefaultAsync(a => a.Id == id);
 
             if (Album == null)
             {

@@ -24,7 +24,7 @@ namespace MusicReviewsWebsite.Pages.Albums
         public async Task OnGetAsync()
         {
             Album = await _context.Album
-                .Include(a => a.Artist).ToListAsync();
+                .Include(a => a.Artists).ToListAsync();
         }
     }
 }

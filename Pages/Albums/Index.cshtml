@@ -29,7 +29,7 @@
                 @Html.DisplayNameFor(model => model.Album[0].CoverPath)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Album[0].Artist)
+                @Html.DisplayNameFor(model => model.Album[0].Artists)
             </th>
             <th></th>
         </tr>
@@ -53,7 +53,7 @@
                 @Html.DisplayFor(modelItem => item.CoverPath)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Artist.Name)
+                @item.GetArtists()
             </td>
             <td>
                 <a asp-page="./Edit" asp-route-id="@item.Id">Edit</a> |

@@ -2,12 +2,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using MusicReviewsWebsite.Models;
 
 namespace MusicReviewsWebsite.Data
 {
-    public class MusicContext : DbContext
+    public class MusicContext : IdentityDbContext<IdentityUser>
     {
         public MusicContext (DbContextOptions<MusicContext> options)
             : base(options)
