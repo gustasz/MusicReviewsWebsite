@@ -21,5 +21,7 @@ namespace MusicReviewsWebsite.Data
         public DbSet<MusicReviewsWebsite.Models.Album> Album { get; set; }
 
         public DbSet<MusicReviewsWebsite.Models.Review> Review { get; set; }
+
+        public DbSet<MusicReviewsWebsite.Models.Genre> Genre { get; set; }
     }
 }

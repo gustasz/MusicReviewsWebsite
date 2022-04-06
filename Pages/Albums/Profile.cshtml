@@ -20,9 +20,9 @@
 
                 <dt class="col-sm-3">@Html.DisplayNameFor(model => model.TopGenres)</dt>
                 <dd class="col-sm-9">
-                    @foreach (var genre in @Model.TopGenres)
+                    @foreach(var item in Model.TopGenres)
                     {
-                        @genre.Name 
+                        <span>@item.Name </span>
                     }
                 </dd>
                 <a asp-page="/Genres/Suggest" asp-route-album_id=@Model.Album.Id>Suggest Genres</a>

@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using MusicReviewsWebsite.Models;
+using System.ComponentModel;
 
 namespace MusicReviewsWebsite.Pages.Albums
 {
@@ -21,6 +22,7 @@ namespace MusicReviewsWebsite.Pages.Albums
         public Album Album { get; set; }
         public List<Review> Reviews { get; set; }
         public Review UserReview { get; set; }
+        [DisplayName("Genres")]
         public IList<Genre> TopGenres { get; set; }
         public async Task<ActionResult> OnGetAsync(int? id)
         {
@@ -34,22 +36,20 @@ namespace MusicReviewsWebsite.Pages.Albums
                 .Include(r => r.Reviews).ThenInclude(u => u.ApplicationUser)
                 .Include(g => g.GenreSuggestions).ThenInclude(g => g.Genre)
                 .Include(g => g.GenreSuggestions).ThenInclude(a => a.ApplicationUser)
-                .AsNoTracking()
-                .SingleOrDefaultAsync(a => a.Id == id);
+                .AsNoTracking().SingleOrDefaultAsync(a => a.Id == id);
 
             if (Album == null)
             {
                 return NotFound();
             }
 
-            TopGenres = new List<Genre>();
+            //get top album genres
             var genresSuggested = new List<GenreSuggestionVM>();
-            Album.GenreSuggestions.GroupBy(g => g.Genre).ToList().ForEach(grp =>
+            Album.GenreSuggestions.GroupBy(g => g.Genre.Id).ToList().ForEach(grp =>
             {
                 var genreVM = new GenreSuggestionVM();
-                genreVM.Genre = grp.Key.Name;
-                genreVM.GenreId = grp.Key.Id;
-                genreVM.Description = grp.Key.Description;
+                genreVM.Genre = grp.First().Genre.Name;
+                genreVM.GenreId = grp.Key;
                 foreach (var item in grp)
                 {
                     if (item.IsFor)
@@ -59,24 +59,25 @@ namespace MusicReviewsWebsite.Pages.Albums
                 }
                 genresSuggested.Add(genreVM);
             });
-            var genreList = genresSuggested.OrderByDescending(a => a.UsersFor.Count - a.UsersAgainst.Count).Take(2)
-                .Select(x => new { x.Genre, x.GenreId }).ToList();
-            genreList.ForEach(grp =>
+            var genreList = genresSuggested.OrderByDescending(a => a.UsersFor.Count - a.UsersAgainst.Count).ToList().Take(2);
+            TopGenres = new List<Genre>();
+            foreach (var genre in genreList)
             {
-                TopGenres.Add(new Genre
-                {
-                    Name = grp.Genre,
-                    Id = grp.GenreId,
-                });
-            });
-
+                TopGenres.Add(new Genre { Id = genre.GenreId, Name = genre.Genre });
+            }
             Reviews = Album.Reviews;
 
+            //show review differently if its written by the current user
             bool isAuthenticated = User.Identity.IsAuthenticated;
             if (isAuthenticated)
-                UserReview = Album.Reviews
-                    .SingleOrDefault(r => r.ApplicationUser.Id == _userManager.GetUserId(User));
-            Reviews.Remove(UserReview);
+            {
+                var userId = _userManager.GetUserId(User);
+                if (Album.Reviews.Any(x => x.ApplicationUser.Id == userId))
+                {
+                    UserReview = Album.Reviews.SingleOrDefault(r => r.ApplicationUser.Id == userId);
+                    Reviews.Remove(UserReview);
+                }
+            }
 
             return Page();
         }
