@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using MusicReviewsWebsite.Data;
 using MusicReviewsWebsite.Models;
@@ -23,19 +24,20 @@ namespace MusicReviewsWebsite.Pages.Genres
         public Album Album { get; set; }
         public async Task OnGetAsync(int album_id)
         {
-            var album = await _context.Album.Include(g => g.GenreSuggestions).ThenInclude(g => g.Genre)
-                                            .Include(g => g.GenreSuggestions).ThenInclude(u => u.ApplicationUser)
-                                            .AsNoTracking()
-                                            .SingleOrDefaultAsync(a => a.Id == album_id);
+            var album = await _context.Album
+                .Include(g => g.GenreSuggestions).ThenInclude(g => g.Genre)
+                .Include(g => g.GenreSuggestions).ThenInclude(u => u.ApplicationUser)
+                .AsNoTracking().SingleOrDefaultAsync(a => a.Id == album_id);
             Album = album;
 
             var genresSuggested = new List<GenreSuggestionVM>();
-            album.GenreSuggestions.Where(a => a.Album.Id == album_id).GroupBy(g => g.Genre).ToList().ForEach(grp =>
+            var genres = album.GenreSuggestions.ToList().GroupBy(g => g.Genre.Id);
+            foreach (var grp in genres)
             {
                 var genreVM = new GenreSuggestionVM();
-                genreVM.Genre = grp.Key.Name;
-                genreVM.GenreId = grp.Key.Id;
-                genreVM.Description = grp.Key.Description;
+                genreVM.Genre = grp.First().Genre.Name;
+                genreVM.GenreId = grp.Key;
+                genreVM.Description = grp.First().Genre.Description;
                 foreach (var item in grp)
                 {
                     if (item.IsFor)
@@ -44,8 +46,16 @@ namespace MusicReviewsWebsite.Pages.Genres
                         genreVM.UsersAgainst.Add(item.ApplicationUser.UserName);
                 }
                 genresSuggested.Add(genreVM);
-            });
+            }
             GenresSuggested = genresSuggested.OrderByDescending(a => a.UsersFor.Count - a.UsersAgainst.Count).ToList();
+            var suggestedGenreIds = genresSuggested.Select(g => g.GenreId);
+
+            ViewData["GenreId"] = _context.Genre.Where(g => !suggestedGenreIds.Contains(g.Id)).Select(g =>
+                                            new SelectListItem
+                                            {
+                                                Value = g.Id.ToString(),
+                                                Text = g.Name
+                                            }).ToList();
         }
 
         public async Task<IActionResult> OnPostVoteAsync(int album_id,int genre_id,bool isFor)
@@ -58,6 +68,12 @@ namespace MusicReviewsWebsite.Pages.Genres
                 .Include(g => g.GenreSuggestions).ThenInclude(u => u.ApplicationUser)
                 .SingleOrDefaultAsync(a => a.Id == album_id);
             var allGenreVotes = album.GenreSuggestions.Where(g => g.Genre.Id == genre_id).ToList();
+            var genre = await _context.Genre.FindAsync(genre_id);
+
+            if(album.GenreSuggestions == null)
+            {
+                album.GenreSuggestions = new List<GenreSuggestion>();
+            }
 
             if (allGenreVotes.Any(a => a.ApplicationUser.Id == user.Id)) // check, if the user has already voted on that genre
             {
@@ -69,7 +85,7 @@ namespace MusicReviewsWebsite.Pages.Genres
                 album.GenreSuggestions.Add(new GenreSuggestion
                 {
                     Album = album,
-                    Genre = allGenreVotes.First().Genre,
+                    Genre = genre,
                     ApplicationUser = user,
                     IsFor = isFor
                 });
@@ -81,11 +97,12 @@ namespace MusicReviewsWebsite.Pages.Genres
 
         public async Task<IActionResult> OnPostUndoAsync(int album_id, int genre_id)
         {
-            // check if user actually has written
+            // check if user actually has written a review
             var user = await _userManager.GetUserAsync(User);
-            var album = await _context.Album.Include(g => g.GenreSuggestions).ThenInclude(g => g.Genre)
+            var album = await _context.Album
+                .Include(g => g.GenreSuggestions).ThenInclude(g => g.Genre)
                 .Include(g => g.GenreSuggestions).ThenInclude(u => u.ApplicationUser)
-                .FirstOrDefaultAsync(a => a.Id == album_id);
+                .SingleOrDefaultAsync(a => a.Id == album_id);
             var allGenreVotes = album.GenreSuggestions.Where(g => g.Genre.Id == genre_id).ToList();
 
             var userVote = allGenreVotes.Where(v => v.ApplicationUser.Id == user.Id).SingleOrDefault();
@@ -95,6 +112,5 @@ namespace MusicReviewsWebsite.Pages.Genres
 
             return RedirectToPage("/Genres/Suggest", new { album_id = album.Id });
         }
-
     }
 }

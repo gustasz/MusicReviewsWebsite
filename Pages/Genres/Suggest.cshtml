@@ -51,3 +51,14 @@
             </div>
             <hr>
 }
+@if(ViewBag.GenreId.Count > 0)
+{
+<div class="col-6">
+<form asp-page-handler="vote" method="post">
+    <input type="hidden" name="album_id" value="@Model.Album.Id"/>
+    <input type="hidden" name="isFor" value="True"/>
+    <select name="genre_id" class="form-control" asp-items="ViewBag.GenreId"></select>  
+    <button class="btn btn-primary">Suggest New Genre</button>
+</form>
+</div>
+}

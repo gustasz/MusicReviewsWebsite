@@ -24,9 +24,7 @@ namespace MusicReviewsWebsite.Pages.Reviews
         public Album Album { get; set; }
         public async Task<ActionResult> OnGet(int? id)
         {
-            Album = await _context.Album
-                .AsNoTracking()
-                .SingleOrDefaultAsync(a => a.Id == id);
+            Album = await _context.Album.AsNoTracking().SingleOrDefaultAsync(a => a.Id == id);
             return Page();
         }
         public async Task<ActionResult> OnPostAsync(int? id)

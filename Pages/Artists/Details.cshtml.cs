@@ -32,8 +32,7 @@ namespace MusicReviewsWebsite.Pages.Artists
 
             Artist = await _context.Artist
                 .Include(a => a.Albums)
-                .AsNoTracking()
-                .FirstOrDefaultAsync(m => m.Id == id);
+                .AsNoTracking().SingleOrDefaultAsync(m => m.Id == id);
 
             if (Artist == null)
             {

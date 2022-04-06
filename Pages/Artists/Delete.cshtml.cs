@@ -36,8 +36,7 @@ namespace MusicReviewsWebsite.Pages.Artists
             }
 
             Artist = await _context.Artist
-                .AsNoTracking()
-                .SingleOrDefaultAsync(a => a.Id == id);
+                .AsNoTracking().SingleOrDefaultAsync(a => a.Id == id);
 
             if (Artist == null)
             {
