@@ -9,7 +9,7 @@ using MusicReviewsWebsite.Models;
 
 namespace MusicReviewsWebsite.Data
 {
-    public class MusicContext : IdentityDbContext<IdentityUser>
+    public class MusicContext : IdentityDbContext<ApplicationUser>
     {
         public MusicContext (DbContextOptions<MusicContext> options)
             : base(options)
@@ -19,5 +19,7 @@ namespace MusicReviewsWebsite.Data
         public DbSet<MusicReviewsWebsite.Models.Artist> Artist { get; set; }
 
         public DbSet<MusicReviewsWebsite.Models.Album> Album { get; set; }
+
+        public DbSet<MusicReviewsWebsite.Models.Review> Review { get; set; }
     }
 }

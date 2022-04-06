@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
@@ -10,6 +11,7 @@ using MusicReviewsWebsite.Models;
 
 namespace MusicReviewsWebsite.Pages.Albums
 {
+    [Authorize(Roles = "Admin,Moderator")]
     public class DetailsModel : PageModel
     {
         private readonly MusicReviewsWebsite.Data.MusicContext _context;
@@ -31,7 +33,7 @@ namespace MusicReviewsWebsite.Pages.Albums
             Album = await _context.Album
                 .Include(a => a.Artists)
                 .AsNoTracking()
-                .FirstOrDefaultAsync(m => m.Id == id);
+                .SingleOrDefaultAsync(a => a.Id == id);
 
             if (Album == null)
             {

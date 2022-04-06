@@ -1,0 +1,40 @@
+﻿@page
+@model MusicReviewsWebsite.Pages.Reviews.EditModel
+
+@{
+    ViewData["Title"] = "Edit";
+}
+
+<h1>Edit</h1>
+
+<h4>Review</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="Review.Id" />
+            <input type="hidden" asp-for="Review.Album.Id" />
+            <input type="hidden" asp-for="Review.Album.Name" />
+            <input type="hidden" asp-for="Review.ApplicationUser.Id" />
+            <div class="form-group">
+                <label asp-for="Review.Rating" class="control-label"></label>
+                <input asp-for="Review.Rating" class="form-control" />
+                <span asp-validation-for="Review.Rating" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Review.Text" class="control-label"></label>
+                <input asp-for="Review.Text" class="form-control" />
+                <span asp-validation-for="Review.Text" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary mt-1" /> |
+                <a asp-page="/Albums/Profile" asp-route-id="@Model.Review.Album.Id">Back to Album</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

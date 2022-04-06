@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -11,6 +12,7 @@ using MusicReviewsWebsite.Models;
 
 namespace MusicReviewsWebsite.Pages.Albums
 {
+    [Authorize(Roles = "Admin,Moderator")]
     public class EditModel : PageModel
     {
         private readonly MusicReviewsWebsite.Data.MusicContext _context;
@@ -34,7 +36,9 @@ namespace MusicReviewsWebsite.Pages.Albums
             }
 
             Album album = await _context.Album
-                .Include(a => a.Artists).FirstOrDefaultAsync(m => m.Id == id);
+                .Include(a => a.Artists)
+                .AsNoTracking()
+                .SingleOrDefaultAsync(a => a.Id == id);
 
             if (album == null)
             {
@@ -68,7 +72,8 @@ namespace MusicReviewsWebsite.Pages.Albums
 
         public async Task<IActionResult> OnPostAsync(int id)
         {
-            var albumToUpdate = await _context.Album.Include(a => a.Artists).SingleOrDefaultAsync(a => a.Id == id);
+            var albumToUpdate = await _context.Album.Include(a => a.Artists)
+                .SingleOrDefaultAsync(a => a.Id == id);
 
             if (!ModelState.IsValid)
             {

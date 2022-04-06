@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
@@ -10,6 +11,7 @@ using MusicReviewsWebsite.Models;
 
 namespace MusicReviewsWebsite.Pages.Artists
 {
+    [Authorize(Roles = "Admin,Moderator")]
     public class DeleteModel : PageModel
     {
         private readonly MusicReviewsWebsite.Data.MusicContext _context;
@@ -35,7 +37,7 @@ namespace MusicReviewsWebsite.Pages.Artists
 
             Artist = await _context.Artist
                 .AsNoTracking()
-                .FirstOrDefaultAsync(m => m.Id == id);
+                .SingleOrDefaultAsync(a => a.Id == id);
 
             if (Artist == null)
             {

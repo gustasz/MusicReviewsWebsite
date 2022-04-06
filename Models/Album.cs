@@ -18,11 +18,14 @@ namespace MusicReviewsWebsite.Models
         [DisplayName("Cover Path")]
         public string CoverPath { get; set; }
 
-        public List<Artist> Artists { get; set; } = new List<Artist>();
+        public List<Artist> Artists { get; set; }
+        public List<Review> Reviews { get; set; }
+        public List<GenreSuggestion> GenreSuggestions { get; set; }
 
         public string GetRating()
         {
-            return $"{AverageRating} / 10 from {ReviewCount} reviews";
+            string plurality = AverageRating == 1 ? "review" : "reviews";
+            return $"{AverageRating} / 10 from {ReviewCount} {plurality}";
         }
 
         public string GetArtists()

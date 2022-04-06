@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -11,6 +12,7 @@ using MusicReviewsWebsite.Models;
 
 namespace MusicReviewsWebsite.Pages.Artists
 {
+    [Authorize(Roles = "Admin,Moderator")]
     public class EditModel : PageModel
     {
         private readonly MusicReviewsWebsite.Data.MusicContext _context;
@@ -30,7 +32,9 @@ namespace MusicReviewsWebsite.Pages.Artists
                 return NotFound();
             }
 
-            Artist = await _context.Artist.FindAsync(id);
+            Artist = await _context.Artist
+                .AsNoTracking()
+                .SingleOrDefaultAsync(a => a.Id == id);
 
             if (Artist == null)
             {
@@ -58,11 +62,6 @@ namespace MusicReviewsWebsite.Pages.Artists
             }
 
             return Page();
-        }
-
-        private bool ArtistExists(int id)
-        {
-            return _context.Artist.Any(e => e.Id == id);
         }
     }
 }

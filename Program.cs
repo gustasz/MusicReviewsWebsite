@@ -2,6 +2,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using MusicReviewsWebsite.Data;
 using Microsoft.AspNetCore.Identity;
+using MusicReviewsWebsite.Models;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -9,9 +11,11 @@ builder.Services.AddRazorPages();
 
 builder.Services.AddDbContext<MusicContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("MusicContext")));
-builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
-    .AddEntityFrameworkStores<MusicContext>();builder.Services.AddDbContext<MusicContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("MusicContext")));
+builder.Services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = false)
+    .AddRoles<IdentityRole>()
+    .AddEntityFrameworkStores<MusicContext>();
+//builder.Services.AddDbContext<MusicContext>(options =>
+//    options.UseSqlServer(builder.Configuration.GetConnectionString("MusicContext")));
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
 var app = builder.Build();
@@ -34,7 +38,8 @@ using (var scope = app.Services.CreateScope())
     var services = scope.ServiceProvider;
 
     var context = services.GetRequiredService<MusicContext>();
-    DbInitializer.Initialize(context);
+    var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
+    await DbInitializer.Initialize(context,roleManager);
 }
 
 app.UseHttpsRedirection();

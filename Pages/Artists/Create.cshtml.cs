@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -10,6 +11,7 @@ using MusicReviewsWebsite.Models;
 
 namespace MusicReviewsWebsite.Pages.Artists
 {
+    [Authorize(Roles = "Admin,Moderator")]
     public class CreateModel : PageModel
     {
         private readonly MusicReviewsWebsite.Data.MusicContext _context;
@@ -41,7 +43,6 @@ namespace MusicReviewsWebsite.Pages.Artists
                 return RedirectToPage("./Index");
             }
             return Page();
-
         }
     }
 }
