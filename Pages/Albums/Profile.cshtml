@@ -18,9 +18,51 @@
                 <dt class="col-sm-3">@Html.DisplayNameFor(model => model.Album.ReleaseDate)</dt>
                 <dd class="col-sm-9">@Html.DisplayFor(model => model.Album.ReleaseDate)</dd>
 
+                <dt class="col-sm-3">@Html.DisplayNameFor(model => model.TopGenres)</dt>
+                <dd class="col-sm-9">
+                    @foreach (var genre in @Model.TopGenres)
+                    {
+                        @genre.Name 
+                    }
+                </dd>
+                <a asp-page="/Genres/Suggest" asp-route-album_id=@Model.Album.Id>Suggest Genres</a>
+
                 <dt class="col-sm-3">Rating</dt>
                 <dd class="col-sm-9">@Model.Album.GetRating()</dd>
             </dl>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-6">
+            @if (Model.UserReview == null && User.Identity.IsAuthenticated)
+            {
+                <a asp-page="/Reviews/Create" asp-route-id=@Model.Album.Id class="btn btn-lg btn-primary mt-2">Write a Review</a>
+            }
+          <ol class="list-group list-group mt-2">
+              @if(Model.UserReview != null)
+                {
+          <li class="list-group-item-primary d-flex justify-content-between align-items-start">
+            <div class="ms-2 me-auto">
+              <div class="fw-bold">@Html.DisplayFor(model => model.UserReview.ApplicationUser.UserName)</div>
+              @Html.DisplayFor(model => model.UserReview.Text)
+            </div>
+                <a asp-page="/Reviews/Edit" asp-route-id=@Model.Album.Id class="btn btn-success mt-1">Edit</a>
+                <a asp-page="/Reviews/Delete" asp-route-id=@Model.Album.Id class="btn btn-danger mt-1">Delete</a>
+            <span class="badge bg-primary rounded-pill">@Model.UserReview.GetRating()</span>
+          </li>
+                }
+          @foreach(var review in Model.Reviews)
+          {
+          <li class="list-group-item d-flex justify-content-between align-items-start">
+            <div class="ms-2 me-auto">
+              <div class="fw-bold">@Html.DisplayFor(modelItem => review.ApplicationUser.UserName)</div>
+              @Html.DisplayFor(modelItem => review.Text)
+            </div>
+            <span class="badge bg-primary rounded-pill">@review.GetRating()</span>
+          </li>
+          }
+          </ol>
         </div>
     </div>
 </div>

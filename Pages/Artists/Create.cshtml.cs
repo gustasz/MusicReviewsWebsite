@@ -43,7 +43,6 @@ namespace MusicReviewsWebsite.Pages.Artists
                 return RedirectToPage("./Index");
             }
             return Page();
-
         }
     }
 }

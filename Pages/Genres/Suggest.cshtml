@@ -1,0 +1,53 @@
+﻿@page
+@using Microsoft.AspNetCore.Identity
+@using MusicReviewsWebsite.Models
+@model MusicReviewsWebsite.Pages.Genres.SuggestModel
+@inject UserManager<ApplicationUser> UserManager
+@{
+}
+
+@Model.Album.Name
+
+@foreach(var genre in Model.GenresSuggested)
+{
+        <div><h2>@genre.Genre</h2></div><p>@genre.Description</p>
+        <div>
+        <b>voted for:</b> @genre.UsersFor.Count() :
+            @foreach(string userFor in genre.UsersFor)
+                {
+                    <a><span>@userFor</span></a>
+                }
+        </div>
+                <div>
+        <b>voted against:</b> @genre.UsersAgainst.Count() : 
+            @foreach(string userAgainst in genre.UsersAgainst)
+                {
+                    <a><span>@userAgainst</span></a>
+                }
+                </div>
+            <div>
+            <div>
+            <form asp-page-handler="vote" method="post" style="display: inline;">
+                <button class="btn btn-success">+</button>
+                <input type="hidden" name="album_id" value="@Model.Album.Id"/>
+                <input type="hidden" name="isFor" value="True"/>
+                <input type="hidden" name="genre_id" value="@genre.GenreId"/>
+            </form>
+            <form asp-page-handler="vote" method="post" style="display: inline;">
+                <button class="btn btn-danger">-</button>
+                <input type="hidden" name="album_id" value="@Model.Album.Id"/>
+                <input type="hidden" name="isFor" value="False"/>
+                <input type="hidden" name="genre_id" value="@genre.GenreId"/>
+            </form>
+            @if (genre.UsersFor.Contains(@UserManager.GetUserName(User)) || genre.UsersAgainst.Contains(@UserManager.GetUserName(User)))
+            {
+                <form asp-page-handler="undo" method="post" style="display: inline;">
+                    <input type="hidden" name="album_id" value="@Model.Album.Id"/>
+                <button class="btn btn-primary">Remove Vote</button>
+                <input type="hidden" name="genre_id" value="@genre.GenreId"/>
+                </form>
+            }
+            </div>
+            </div>
+            <hr>
+}

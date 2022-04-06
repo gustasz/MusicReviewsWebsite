@@ -34,7 +34,7 @@ namespace MusicReviewsWebsite.Migrations
 
                     b.HasIndex("ArtistsId");
 
-                    b.ToTable("AlbumArtist", (string)null);
+                    b.ToTable("AlbumArtist");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -87,71 +87,6 @@ namespace MusicReviewsWebsite.Migrations
                     b.HasIndex("RoleId");
 
                     b.ToTable("AspNetRoleClaims", (string)null);
-                });
-
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUser", b =>
-                {
-                    b.Property<string>("Id")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<int>("AccessFailedCount")
-                        .HasColumnType("int");
-
-                    b.Property<string>("ConcurrencyStamp")
-                        .IsConcurrencyToken()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Email")
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
-
-                    b.Property<bool>("EmailConfirmed")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("LockoutEnabled")
-                        .HasColumnType("bit");
-
-                    b.Property<DateTimeOffset?>("LockoutEnd")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<string>("NormalizedEmail")
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
-
-                    b.Property<string>("NormalizedUserName")
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
-
-                    b.Property<string>("PasswordHash")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("PhoneNumber")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("PhoneNumberConfirmed")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("SecurityStamp")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("TwoFactorEnabled")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("UserName")
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("NormalizedEmail")
-                        .HasDatabaseName("EmailIndex");
-
-                    b.HasIndex("NormalizedUserName")
-                        .IsUnique()
-                        .HasDatabaseName("UserNameIndex")
-                        .HasFilter("[NormalizedUserName] IS NOT NULL");
-
-                    b.ToTable("AspNetUsers", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
@@ -265,7 +200,72 @@ namespace MusicReviewsWebsite.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Album", (string)null);
+                    b.ToTable("Album");
+                });
+
+            modelBuilder.Entity("MusicReviewsWebsite.Models.ApplicationUser", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("AccessFailedCount")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ConcurrencyStamp")
+                        .IsConcurrencyToken()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Email")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<bool>("EmailConfirmed")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("LockoutEnabled")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTimeOffset?>("LockoutEnd")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("NormalizedEmail")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<string>("NormalizedUserName")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<string>("PasswordHash")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PhoneNumber")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("PhoneNumberConfirmed")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("SecurityStamp")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("TwoFactorEnabled")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("UserName")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("NormalizedEmail")
+                        .HasDatabaseName("EmailIndex");
+
+                    b.HasIndex("NormalizedUserName")
+                        .IsUnique()
+                        .HasDatabaseName("UserNameIndex")
+                        .HasFilter("[NormalizedUserName] IS NOT NULL");
+
+                    b.ToTable("AspNetUsers", (string)null);
                 });
 
             modelBuilder.Entity("MusicReviewsWebsite.Models.Artist", b =>
@@ -288,7 +288,87 @@ namespace MusicReviewsWebsite.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Artist", (string)null);
+                    b.ToTable("Artist");
+                });
+
+            modelBuilder.Entity("MusicReviewsWebsite.Models.Genre", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Genre");
+                });
+
+            modelBuilder.Entity("MusicReviewsWebsite.Models.GenreSuggestion", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<int?>("AlbumId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ApplicationUserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int?>("GenreId")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsFor")
+                        .HasColumnType("bit");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AlbumId");
+
+                    b.HasIndex("ApplicationUserId");
+
+                    b.HasIndex("GenreId");
+
+                    b.ToTable("GenreSuggestion");
+                });
+
+            modelBuilder.Entity("MusicReviewsWebsite.Models.Review", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<int?>("AlbumId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ApplicationUserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("Rating")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Text")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AlbumId");
+
+                    b.HasIndex("ApplicationUserId");
+
+                    b.ToTable("Review");
                 });
 
             modelBuilder.Entity("AlbumArtist", b =>
@@ -317,7 +397,7 @@ namespace MusicReviewsWebsite.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
                 {
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", null)
+                    b.HasOne("MusicReviewsWebsite.Models.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -326,7 +406,7 @@ namespace MusicReviewsWebsite.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
                 {
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", null)
+                    b.HasOne("MusicReviewsWebsite.Models.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -341,7 +421,7 @@ namespace MusicReviewsWebsite.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", null)
+                    b.HasOne("MusicReviewsWebsite.Models.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -350,11 +430,61 @@ namespace MusicReviewsWebsite.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
                 {
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", null)
+                    b.HasOne("MusicReviewsWebsite.Models.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("MusicReviewsWebsite.Models.GenreSuggestion", b =>
+                {
+                    b.HasOne("MusicReviewsWebsite.Models.Album", "Album")
+                        .WithMany("GenreSuggestions")
+                        .HasForeignKey("AlbumId");
+
+                    b.HasOne("MusicReviewsWebsite.Models.ApplicationUser", "ApplicationUser")
+                        .WithMany("GenreSuggestions")
+                        .HasForeignKey("ApplicationUserId");
+
+                    b.HasOne("MusicReviewsWebsite.Models.Genre", "Genre")
+                        .WithMany()
+                        .HasForeignKey("GenreId");
+
+                    b.Navigation("Album");
+
+                    b.Navigation("ApplicationUser");
+
+                    b.Navigation("Genre");
+                });
+
+            modelBuilder.Entity("MusicReviewsWebsite.Models.Review", b =>
+                {
+                    b.HasOne("MusicReviewsWebsite.Models.Album", "Album")
+                        .WithMany("Reviews")
+                        .HasForeignKey("AlbumId");
+
+                    b.HasOne("MusicReviewsWebsite.Models.ApplicationUser", "ApplicationUser")
+                        .WithMany("Reviews")
+                        .HasForeignKey("ApplicationUserId");
+
+                    b.Navigation("Album");
+
+                    b.Navigation("ApplicationUser");
+                });
+
+            modelBuilder.Entity("MusicReviewsWebsite.Models.Album", b =>
+                {
+                    b.Navigation("GenreSuggestions");
+
+                    b.Navigation("Reviews");
+                });
+
+            modelBuilder.Entity("MusicReviewsWebsite.Models.ApplicationUser", b =>
+                {
+                    b.Navigation("GenreSuggestions");
+
+                    b.Navigation("Reviews");
                 });
 #pragma warning restore 612, 618
         }

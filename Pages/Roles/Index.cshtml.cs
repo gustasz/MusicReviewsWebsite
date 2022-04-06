@@ -22,7 +22,7 @@ namespace MusicReviewsWebsite.Pages.Roles
             _context = context;
         }
 
-        public IList<IdentityUser> Users { get; set; }
+        public IList<ApplicationUser> Users { get; set; }
 
         public async Task OnGetAsync()
         {

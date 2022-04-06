@@ -36,7 +36,9 @@ namespace MusicReviewsWebsite.Pages.Albums
             }
 
             Album album = await _context.Album
-                .Include(a => a.Artists).FirstOrDefaultAsync(m => m.Id == id);
+                .Include(a => a.Artists)
+                .AsNoTracking()
+                .SingleOrDefaultAsync(a => a.Id == id);
 
             if (album == null)
             {
@@ -70,7 +72,8 @@ namespace MusicReviewsWebsite.Pages.Albums
 
         public async Task<IActionResult> OnPostAsync(int id)
         {
-            var albumToUpdate = await _context.Album.Include(a => a.Artists).SingleOrDefaultAsync(a => a.Id == id);
+            var albumToUpdate = await _context.Album.Include(a => a.Artists)
+                .SingleOrDefaultAsync(a => a.Id == id);
 
             if (!ModelState.IsValid)
             {

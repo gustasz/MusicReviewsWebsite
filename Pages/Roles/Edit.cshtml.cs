@@ -17,11 +17,11 @@ namespace MusicReviewsWebsite.Pages.Roles
     public class EditModel : PageModel
     {
         private readonly MusicContext _context;
-        private readonly UserManager<IdentityUser> _userManager;
+        private readonly UserManager<ApplicationUser> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
-        private readonly SignInManager<IdentityUser> _signInManager;
+        private readonly SignInManager<ApplicationUser> _signInManager;
 
-        public EditModel(MusicContext context, UserManager<IdentityUser> userManager, RoleManager<IdentityRole> roleManager, SignInManager<IdentityUser> signInManager)
+        public EditModel(MusicContext context, UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager, SignInManager<ApplicationUser> signInManager)
         {
             _context = context;
             _userManager = userManager;
@@ -39,8 +39,7 @@ namespace MusicReviewsWebsite.Pages.Roles
                 return NotFound();
             }
 
-            var user = await _context.Users.FindAsync(id);
-
+            var user = await _userManager.FindByIdAsync(id);
             if (user == null)
             {
                 return NotFound();
@@ -64,7 +63,7 @@ namespace MusicReviewsWebsite.Pages.Roles
 
         public async Task<IActionResult> OnPostAsync(string id)
         {
-            var user = await _context.Users.FindAsync(id);
+            var user = await _userManager.FindByIdAsync(id);
             foreach (var role in UserVM.Roles)
             {
                 if (role.Selected)

@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
 using MusicReviewsWebsite.Data;
 using MusicReviewsWebsite.Models;
 
@@ -71,13 +72,14 @@ namespace MusicReviewsWebsite.Pages.Albums
             {
                 Name = AlbumVM.Name,
                 ReleaseDate = AlbumVM.ReleaseDate,
-                CoverPath = filePath
+                CoverPath = filePath,
+                Artists = new List<Artist>()
             };
 
             // assign artists
             for (int i = 0; i < AlbumVM.ArtistIds.Count(); i++)
             {
-                var artist = _context.Artist.SingleOrDefault(a => a.Id == Int32.Parse(AlbumVM.ArtistIds[i]));
+                var artist = await _context.Artist.FindAsync(Int32.Parse(AlbumVM.ArtistIds[i]));
                 newAlbum.Artists.Add(artist);
             }
 

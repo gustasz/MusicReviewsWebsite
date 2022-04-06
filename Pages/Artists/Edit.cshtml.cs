@@ -32,7 +32,9 @@ namespace MusicReviewsWebsite.Pages.Artists
                 return NotFound();
             }
 
-            Artist = await _context.Artist.FindAsync(id);
+            Artist = await _context.Artist
+                .AsNoTracking()
+                .SingleOrDefaultAsync(a => a.Id == id);
 
             if (Artist == null)
             {
@@ -60,11 +62,6 @@ namespace MusicReviewsWebsite.Pages.Artists
             }
 
             return Page();
-        }
-
-        private bool ArtistExists(int id)
-        {
-            return _context.Artist.Any(e => e.Id == id);
         }
     }
 }
