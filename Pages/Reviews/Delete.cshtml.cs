@@ -68,7 +68,7 @@ namespace MusicReviewsWebsite.Pages.Reviews
                 _context.Review.Remove(Review);
                 var album = await _context.Album.Include(a => a.Reviews).FirstOrDefaultAsync(a => a.Id == Review.Album.Id);
                 album.ReviewCount = album.Reviews.Count() - 1;
-                album.AverageRating = album.ReviewCount != 0 ? (album.Reviews.Sum(x => x.Rating) - Review.Rating) / album.ReviewCount : 0; // avoid divide by 0
+                album.AverageRating = album.ReviewCount != 0 ? (((album.Reviews.Sum(x => x.Rating) - Review.Rating) * 100) / album.ReviewCount) : 0; // avoid divide by 0
                 _context.Album.Update(album);
                 await _context.SaveChangesAsync();
             }

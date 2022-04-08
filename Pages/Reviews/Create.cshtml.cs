@@ -24,10 +24,12 @@ namespace MusicReviewsWebsite.Pages.Reviews
         public Album Album { get; set; }
         public async Task<ActionResult> OnGet(int? id)
         {
+            if (id == null)
+                return NotFound();
             Album = await _context.Album.AsNoTracking().SingleOrDefaultAsync(a => a.Id == id);
             return Page();
         }
-        public async Task<ActionResult> OnPostAsync(int? id)
+        public async Task<ActionResult> OnPostAsync(int id)
         {
             var emptyReview = new Review();
             var user = await _userManager.GetUserAsync(User);
@@ -35,7 +37,7 @@ namespace MusicReviewsWebsite.Pages.Reviews
             var album = _context.Album.Include(r => r.Reviews).SingleOrDefault(m => m.Id == id);
             if(album.Reviews.Any(r => r.ApplicationUser == user) || album.Reviews == null)
             {
-                return Page();
+                return NotFound();
             }
 
             if (await TryUpdateModelAsync<Review>(
@@ -48,7 +50,7 @@ namespace MusicReviewsWebsite.Pages.Reviews
                 _context.Review.Add(emptyReview);
 
                 album.ReviewCount = album.Reviews.Count();
-                album.AverageRating = album.Reviews.Sum(x => x.Rating) / album.ReviewCount;
+                album.AverageRating = ((album.Reviews.Sum(x => x.Rating) * 100) / album.ReviewCount); // average is stored in 0.01 accuracy
 
                 await _context.SaveChangesAsync();
                 return RedirectToPage("/Albums/Profile", new { id = id});

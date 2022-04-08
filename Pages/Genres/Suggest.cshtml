@@ -6,7 +6,7 @@
 @{
 }
 
-@Model.Album.Name
+<a asp-page="/Albums/Profile" asp-route-id="@Model.Album.Id">@Html.DisplayFor(model => model.Album.Name)</a>
 
 @foreach(var genre in Model.GenresSuggested)
 {
