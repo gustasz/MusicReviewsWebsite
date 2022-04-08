@@ -25,7 +25,7 @@ namespace MusicReviewsWebsite.Models
         public string GetRating()
         {
             string plurality = AverageRating == 1 ? "review" : "reviews";
-            return $"{AverageRating} / 10 from {ReviewCount} {plurality}";
+            return $"{(float)AverageRating / 100} / 10 from {ReviewCount} {plurality}";
         }
 
         public string GetArtists()

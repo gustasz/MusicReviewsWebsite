@@ -32,8 +32,8 @@ namespace MusicReviewsWebsite.Pages.Albums
                                                         new SelectListItem
                                                         {
                                                             Value = a.Id.ToString(),
-                                                            Text = a.Name
-                                                        }).ToList();
+                                                            Text = $"{a.Name} ({a.Id.ToString()})"
+                                                        }).ToList().OrderBy(x => x.Text);
             return Page();
         }
 

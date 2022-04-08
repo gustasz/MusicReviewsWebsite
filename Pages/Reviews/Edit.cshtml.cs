@@ -68,8 +68,8 @@ namespace MusicReviewsWebsite.Pages.Reviews
             {
                 //_context.Review.Add(reviewToUpdate);
                 var album = await _context.Album.Include(a => a.Reviews).SingleOrDefaultAsync(a => a.Id == Review.Album.Id);
+                album.AverageRating = ((album.Reviews.Sum(x => x.Rating) * 100) / album.ReviewCount);
                 album.Reviews.Add(reviewToUpdate);
-                album.AverageRating = (album.Reviews.Sum(x => x.Rating) - Review.Rating) / album.ReviewCount;
 
                 await _context.SaveChangesAsync();
                 return RedirectToPage("/Albums/Profile", new { id = Review.Album.Id });
