@@ -49,6 +49,17 @@ namespace MusicReviewsWebsite.Data
                 await roleManager.CreateAsync(new IdentityRole("Admin"));
                 await roleManager.CreateAsync(new IdentityRole("Moderator"));
             }
+
+          /*  if (!context.Users.Any())
+            {
+                var adminUser = new ApplicationUser
+                {
+                    UserName = "admin@gmail.com",
+                    PasswordHash = "admin123" // should be hashed
+                };
+                context.Users.Add(adminUser);
+                context.SaveChanges();
+            }*/
         }
     }
 }

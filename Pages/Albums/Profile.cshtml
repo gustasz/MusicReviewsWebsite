@@ -1,5 +1,10 @@
 ﻿@page "{id}"
+@using Microsoft.AspNetCore.Identity
+@using MusicReviewsWebsite.Models
 @model MusicReviewsWebsite.Pages.Albums.ProfileModel
+
+@inject UserManager<ApplicationUser> UserManager
+@inject SignInManager<ApplicationUser> SignInManager
 @{
     ViewData["Title"] = "Profile";
 }
@@ -9,18 +14,23 @@
         <div class="col-4">
             <img src="~/@Model.Album.CoverPath" class="card-img-top" alt="...">
         </div>
-        <div class="col-8">
+        <div class="col-8 bg-light">
             <h1>@Html.DisplayFor(model => model.Album.Name)</h1>
             <dl class="row">
                 <dt class="col-sm-3">Artist</dt>
-                <dd class="col-sm-9">@Model.Album.GetArtists()</dd>
+                <dd class="col-sm-9">
+                    @foreach (var item in Model.Album.Artists)
+                    {
+                        <a asp-page="/Artists/Profile" asp-route-id=@item.Id>@Html.DisplayFor(modelItem => item.Name)</a>
+                    }
+                </dd>
 
                 <dt class="col-sm-3">@Html.DisplayNameFor(model => model.Album.ReleaseDate)</dt>
                 <dd class="col-sm-9">@Html.DisplayFor(model => model.Album.ReleaseDate)</dd>
 
                 <dt class="col-sm-3">@Html.DisplayNameFor(model => model.TopGenres)</dt>
                 <dd class="col-sm-9">
-                    @foreach(var item in Model.TopGenres)
+                    @foreach (var item in Model.TopGenres)
                     {
                         <span>@item.Name </span>
                     }
@@ -34,35 +44,88 @@
     </div>
 
     <div class="row">
-        <div class="col-6">
+        <div class="col-4">
             @if (Model.UserReview == null && User.Identity.IsAuthenticated)
             {
                 <a asp-page="/Reviews/Create" asp-route-id=@Model.Album.Id class="btn btn-lg btn-primary mt-2">Write a Review</a>
             }
-          <ol class="list-group list-group mt-2">
-              @if(Model.UserReview != null)
+            <ol class="list-group list-group mt-2">
+                @if (Model.UserReview != null)
                 {
-          <li class="list-group-item-primary d-flex justify-content-between align-items-start">
-            <div class="ms-2 me-auto">
-              <div class="fw-bold">@Html.DisplayFor(model => model.UserReview.ApplicationUser.UserName)</div>
-              @Html.DisplayFor(model => model.UserReview.Text)
-            </div>
-                <a asp-page="/Reviews/Edit" asp-route-id=@Model.Album.Id class="btn btn-success mt-1">Edit</a>
-                <a asp-page="/Reviews/Delete" asp-route-id=@Model.Album.Id class="btn btn-danger mt-1">Delete</a>
-            <span class="badge bg-primary rounded-pill">@Model.UserReview.GetRating()</span>
-          </li>
+                    <li class="list-group-item-primary d-flex justify-content-between align-items-start">
+                        <div class="ms-2 me-auto">
+                            <div class="fw-bold">
+                                <a asp-page="/Users/Profile" asp-route-name=@Model.UserReview.ApplicationUser.UserName>
+                                    @Html.DisplayFor(model => model.UserReview.ApplicationUser.UserName)
+                                </a>
+                            </div>
+                            @Html.DisplayFor(model => model.UserReview.Text)
+                            <div class="text-reset">@Model.UserReview.CreatedDate.ToString("d")</div>
+                        </div>
+                        <a asp-page="/Reviews/Edit" asp-route-id=@Model.Album.Id class="btn btn-success mt-1">Edit</a>
+                        <a asp-page="/Reviews/Delete" asp-route-id=@Model.Album.Id class="btn btn-danger mt-1">Delete</a>
+                        <span class="badge bg-primary rounded-pill">@Model.UserReview.GetRating()</span>
+                    </li>
                 }
-          @foreach(var review in Model.Reviews)
-          {
-          <li class="list-group-item d-flex justify-content-between align-items-start">
-            <div class="ms-2 me-auto">
-              <div class="fw-bold">@Html.DisplayFor(modelItem => review.ApplicationUser.UserName)</div>
-              @Html.DisplayFor(modelItem => review.Text)
-            </div>
-            <span class="badge bg-primary rounded-pill">@review.GetRating()</span>
-          </li>
-          }
-          </ol>
+
+                @foreach (var review in Model.Reviews)
+                {
+                    <li class="list-group-item d-flex justify-content-between align-items-start">
+                        <div class="ms-2 me-auto">
+                            <div class="fw-bold" style="display:inline-block;"><a asp-page="/Users/Profile" asp-route-name=@review.ApplicationUser.UserName>@Html.DisplayFor(modelItem => review.ApplicationUser.UserName)</a></div>
+                            <div class="text-reset" style="display:inline-block;">@review.CreatedDate.ToString("d")</div>
+                        </div>
+                        <span class="badge bg-primary rounded-pill">@review.GetRating()</span>
+                    </li>
+                }
+            </ol>
+        </div>
+        <div class="col-8">
+            <ol class="list-group list-group mt-2">
+                @foreach (var reviewT in Model.ReviewsWithText)
+                {
+                    <li class="list-group-item d-flex justify-content-between align-items-start">
+                        <div class="ms-2 me-auto">
+                            <div class="fw-bold"><a asp-page="/Users/Profile" asp-route-name=@reviewT.ApplicationUser.UserName>@Html.DisplayFor(modelItem => reviewT.ApplicationUser.UserName)</a></div>
+                            @Html.DisplayFor(modelItem => reviewT.Text)
+                            <div class="text-reset">@reviewT.CreatedDate.ToString("d")</div>
+                        </div>
+                        @if (SignInManager.IsSignedIn(User))
+                        {
+                            <form asp-page-handler="vote" method="post" style="display: inline;">
+                                <input type="hidden" name="review_id" value="@reviewT.Id" />
+                                <input type="hidden" name="isFor" value="True" />
+                                @if (reviewT.Votes.Where(v => v.IsFor == true).Any(u => u.ApplicationUser.Id == UserManager.GetUserId(User)))
+                                {
+                                    <button class="btn btn-success"><i class="bi bi-arrow-up"></i></button>
+                                }
+                                else
+                                {
+                                    <button class="btn btn-secondary"><i class="bi bi-arrow-up"></i></button>
+                                }
+                            </form>
+                            <form asp-page-handler="undo" method="post" style="display: inline;">
+                                <input type="hidden" name="review_id" value="@reviewT.Id" />
+                                <button class="btn btn-secondary"><i class="bi bi-square"></i></button>
+                            </form>
+                            <form asp-page-handler="vote" method="post" style="display: inline;">
+                                <input type="hidden" name="review_id" value="@reviewT.Id" />
+                                <input type="hidden" name="isFor" value="False" />
+                                @if (reviewT.Votes.Where(v => v.IsFor == false).Any(u => u.ApplicationUser.Id == UserManager.GetUserId(User)))
+                                {
+                                    <button class="btn btn-danger"><i class="bi bi-arrow-down"></i></button>
+                                }
+                                else
+                                {
+                                    <button class="btn btn-secondary"><i class="bi bi-arrow-down"></i></button>
+                                }
+                            </form>
+                        }
+                        @(reviewT.Votes.Where(i => i.IsFor == true).Count()-reviewT.Votes.Where(i => i.IsFor == false).Count())
+                        <span class="badge bg-primary rounded-pill">@reviewT.GetRating()</span>
+                    </li>
+                }
+            </ol>
         </div>
     </div>
 </div>

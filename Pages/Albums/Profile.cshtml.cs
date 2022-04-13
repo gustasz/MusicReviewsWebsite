@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using MusicReviewsWebsite.Models;
 using System.ComponentModel;
+using System.Linq;
 
 namespace MusicReviewsWebsite.Pages.Albums
 {
@@ -21,6 +22,7 @@ namespace MusicReviewsWebsite.Pages.Albums
         }
         public Album Album { get; set; }
         public List<Review> Reviews { get; set; }
+        public List<Review> ReviewsWithText { get; set; }
         public Review UserReview { get; set; }
         [DisplayName("Genres")]
         public IList<Genre> TopGenres { get; set; }
@@ -34,6 +36,7 @@ namespace MusicReviewsWebsite.Pages.Albums
             Album = await _context.Album
                 .Include(a => a.Artists)
                 .Include(r => r.Reviews).ThenInclude(u => u.ApplicationUser)
+                .Include(r => r.Reviews).ThenInclude(v => v.Votes)
                 .Include(g => g.GenreSuggestions).ThenInclude(g => g.Genre)
                 .Include(g => g.GenreSuggestions).ThenInclude(a => a.ApplicationUser)
                 .AsNoTracking().SingleOrDefaultAsync(a => a.Id == id);
@@ -67,6 +70,12 @@ namespace MusicReviewsWebsite.Pages.Albums
             }
             Reviews = Album.Reviews;
 
+            // im doing a second query, because using two thenInclude for 2nd level in the main album query made my website stuck in loading
+            ReviewsWithText = await _context.Review.Where(a => a.Album.Id == Album.Id).Where(t => t.Text != null)
+                .Include(a => a.ApplicationUser).Include(v => v.Votes).ThenInclude(a => a.ApplicationUser)
+                .OrderByDescending(r => r.Votes.Where(i => i.IsFor == true).Count() - r.Votes.Where(i => i.IsFor == false).Count())
+                .AsNoTracking().ToListAsync();
+
             //show review differently if its written by the current user
             bool isAuthenticated = User.Identity.IsAuthenticated;
             if (isAuthenticated)
@@ -80,6 +89,65 @@ namespace MusicReviewsWebsite.Pages.Albums
             }
 
             return Page();
+        }
+
+        public async Task<IActionResult> OnPostVoteAsync(int review_id, bool isFor)
+        {
+            var review = await _context.Review.Include(a => a.Album).Include(a => a.ApplicationUser)
+                .Include(v => v.Votes).ThenInclude(a => a.ApplicationUser).SingleOrDefaultAsync(r => r.Id == review_id);
+            var currVotes = review.Votes;
+
+            bool isAuthenticated = User.Identity.IsAuthenticated;
+            if (!isAuthenticated || review.Text == null)
+            {
+                return RedirectToPage("/Albums/Profile", new { id = review.Album.Id });
+            }
+
+            var user = await _userManager.GetUserAsync(User);
+            if (user.Id == review.ApplicationUser.Id)
+            {
+                return RedirectToPage("/Albums/Profile", new { id = review.Album.Id });
+            }
+
+            if (!currVotes.Any(a => a.ApplicationUser.Id == user.Id))
+            {
+                var reviewVote = new ReviewVote { ApplicationUser = user, Review = review, IsFor = isFor };
+                review.Votes.Add(reviewVote);
+            }
+            else
+            {
+                currVotes.SingleOrDefault(a => a.ApplicationUser.Id == user.Id).IsFor = isFor;
+            }
+            await _context.SaveChangesAsync();
+
+
+            return RedirectToPage("/Albums/Profile", new { id = review.Album.Id });
+        }
+
+        public async Task<IActionResult> OnPostUndoAsync(int review_id)
+        {
+            var review = await _context.Review.Include(a => a.Album).Include(a => a.ApplicationUser)
+                .Include(v => v.Votes).ThenInclude(a => a.ApplicationUser).SingleOrDefaultAsync(r => r.Id == review_id);
+            var currVotes = review.Votes;
+
+            bool isAuthenticated = User.Identity.IsAuthenticated;
+            if (!isAuthenticated || review.Text == null)
+            {
+                return RedirectToPage("/Albums/Profile", new { id = review.Album.Id });
+            }
+
+            var user = await _userManager.GetUserAsync(User);
+            if (user.Id == review.ApplicationUser.Id)
+            {
+                return RedirectToPage("/Albums/Profile", new { id = review.Album.Id });
+            }
+
+            var userVote = currVotes.SingleOrDefault(a => a.ApplicationUser.Id == user.Id);
+            review.Votes.Remove(userVote);
+            await _context.SaveChangesAsync();
+
+
+            return RedirectToPage("/Albums/Profile", new { id = review.Album.Id });
         }
     }
 }

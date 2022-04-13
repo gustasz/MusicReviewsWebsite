@@ -9,12 +9,17 @@
     {
     <div class="col">
     <div class="card h-100">
-      <img src="~/@item.CoverPath" class="card-img-top" alt="...">
+      <a asp-page="/Albums/Profile" asp-route-id="@item.Id"><img src="~/@item.CoverPath" class="card-img-top" alt="..."> </a>
       <div class="card-body">
         <h5 class="card-title">
             <a asp-page="/Albums/Profile" asp-route-id="@item.Id">@Html.DisplayFor(modelItem => item.Name)</a>
             </h5>
-        <p class="card-text">@item.GetArtists()</p>
+        <p class="card-text">
+            @foreach(var artist in item.Artists)
+            {
+                <a asp-page="/Artists/Profile" asp-route-id=@item.Id>@Html.DisplayFor(modelItem => artist.Name)</a>
+            }
+        </p>
         <p class="card-text">@item.GetRating()</p>
         <p class="card-text"><small class="text-muted">@Html.DisplayFor(modelItem => item.ReleaseDate)</small></p>       
       </div>

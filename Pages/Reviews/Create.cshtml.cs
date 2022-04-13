@@ -47,6 +47,7 @@ namespace MusicReviewsWebsite.Pages.Reviews
             {
                 emptyReview.ApplicationUser = user;
                 emptyReview.Album = album;
+                emptyReview.CreatedDate = DateTime.Now;
                 _context.Review.Add(emptyReview);
 
                 album.ReviewCount = album.Reviews.Count();

@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using MusicReviewsWebsite.Data;
 
@@ -11,9 +12,10 @@ using MusicReviewsWebsite.Data;
 namespace MusicReviewsWebsite.Migrations
 {
     [DbContext(typeof(MusicContext))]
-    partial class MusicContextModelSnapshot : ModelSnapshot
+    [Migration("20220411092609_ReviewDate")]
+    partial class ReviewDate
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -375,32 +377,6 @@ namespace MusicReviewsWebsite.Migrations
                     b.ToTable("Review");
                 });
 
-            modelBuilder.Entity("MusicReviewsWebsite.Models.ReviewVote", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
-
-                    b.Property<string>("ApplicationUserId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<bool>("IsFor")
-                        .HasColumnType("bit");
-
-                    b.Property<int?>("ReviewId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ApplicationUserId");
-
-                    b.HasIndex("ReviewId");
-
-                    b.ToTable("ReviewVote");
-                });
-
             modelBuilder.Entity("AlbumArtist", b =>
                 {
                     b.HasOne("MusicReviewsWebsite.Models.Album", null)
@@ -509,21 +485,6 @@ namespace MusicReviewsWebsite.Migrations
                     b.Navigation("ApplicationUser");
                 });
 
-            modelBuilder.Entity("MusicReviewsWebsite.Models.ReviewVote", b =>
-                {
-                    b.HasOne("MusicReviewsWebsite.Models.ApplicationUser", "ApplicationUser")
-                        .WithMany()
-                        .HasForeignKey("ApplicationUserId");
-
-                    b.HasOne("MusicReviewsWebsite.Models.Review", "Review")
-                        .WithMany("Votes")
-                        .HasForeignKey("ReviewId");
-
-                    b.Navigation("ApplicationUser");
-
-                    b.Navigation("Review");
-                });
-
             modelBuilder.Entity("MusicReviewsWebsite.Models.Album", b =>
                 {
                     b.Navigation("GenreSuggestions");
@@ -536,11 +497,6 @@ namespace MusicReviewsWebsite.Migrations
                     b.Navigation("GenreSuggestions");
 
                     b.Navigation("Reviews");
-                });
-
-            modelBuilder.Entity("MusicReviewsWebsite.Models.Review", b =>
-                {
-                    b.Navigation("Votes");
                 });
 #pragma warning restore 612, 618
         }

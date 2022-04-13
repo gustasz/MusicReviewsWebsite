@@ -1,0 +1,44 @@
+﻿@page "{id}"
+@model MusicReviewsWebsite.Pages.Artists.ProfileModel
+
+@{
+    ViewData["Title"] = "Profile";
+}
+
+<div>
+    <h2>@Html.DisplayFor(model => model.Artist.Name)</h2>
+    <hr />
+    <dl class="row col-6 bg-light">
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Artist.AlsoKnownAs)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Artist.AlsoKnownAs)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Artist.BirthDate)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Artist.BirthDate)
+        </dd>
+    </dl>
+</div>
+@foreach(var item in Model.Albums)
+{
+<div class="card mb-3" style="max-width: 540px;">
+  <div class="row g-0">
+    <div class="col-md-4">
+      <img src="~/@item.CoverPath" class="img-fluid rounded-start" alt="...">
+    </div>
+    <div class="col-md-8">
+      <div class="card-body">
+        <h5 class="card-title">
+            <a asp-page="/Albums/Profile" asp-route-id="@item.Id">@Html.DisplayFor(modelItem => item.Name) </a>
+        </h5>
+        <p class="card-text">@item.GetRating()</p>
+        <p class="card-text"><small class="text-muted">@Html.DisplayFor(modelItem => item.ReleaseDate)</small></p>
+      </div>
+    </div>
+  </div>
+</div>
+}

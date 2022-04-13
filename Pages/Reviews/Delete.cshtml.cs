@@ -60,6 +60,7 @@ namespace MusicReviewsWebsite.Pages.Reviews
             Review = await _context.Review // get review by user id
                 .Include(a => a.Album) 
                 .Include(u => u.ApplicationUser)
+                .Include(v => v.Votes)
                 .Where(a => a.Album.Id == id)
                 .FirstOrDefaultAsync(a => a.ApplicationUser.Id == user.Id);
 

@@ -39,6 +39,7 @@ using (var scope = app.Services.CreateScope())
 
     var context = services.GetRequiredService<MusicContext>();
     var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
+    context.Database.EnsureCreated();
     await DbInitializer.Initialize(context,roleManager);
 }
 

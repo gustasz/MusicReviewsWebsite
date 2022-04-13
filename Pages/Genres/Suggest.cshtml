@@ -8,57 +8,59 @@
 
 <a asp-page="/Albums/Profile" asp-route-id="@Model.Album.Id">@Html.DisplayFor(model => model.Album.Name)</a>
 
-@foreach(var genre in Model.GenresSuggested)
+@foreach (var genre in Model.GenresSuggested)
 {
-        <div><h2>@genre.Genre</h2></div><p>@genre.Description</p>
-        <div>
+    <div><h2>@genre.Genre</h2></div>
+
+    <p>@genre.Description</p>
+    <div>
         <b>voted for:</b> @genre.UsersFor.Count() :
-            @foreach(string userFor in genre.UsersFor)
-                {
-                    <a><span>@userFor</span></a>
-                }
-        </div>
-                <div>
-        <b>voted against:</b> @genre.UsersAgainst.Count() : 
-            @foreach(string userAgainst in genre.UsersAgainst)
-                {
-                    <a><span>@userAgainst</span></a>
-                }
-                </div>
-            <div>
-            <div>
+        @foreach (string userFor in genre.UsersFor)
+        {
+            <a><span>@userFor</span></a>
+        }
+    </div>
+    <div>
+        <b>voted against:</b> @genre.UsersAgainst.Count() :
+        @foreach (string userAgainst in genre.UsersAgainst)
+        {
+            <a><span>@userAgainst</span></a>
+        }
+    </div>
+    <div>
+        <div>
             <form asp-page-handler="vote" method="post" style="display: inline;">
                 <button class="btn btn-success">+</button>
-                <input type="hidden" name="album_id" value="@Model.Album.Id"/>
-                <input type="hidden" name="isFor" value="True"/>
-                <input type="hidden" name="genre_id" value="@genre.GenreId"/>
+                <input type="hidden" name="album_id" value="@Model.Album.Id" />
+                <input type="hidden" name="isFor" value="True" />
+                <input type="hidden" name="genre_id" value="@genre.GenreId" />
             </form>
             <form asp-page-handler="vote" method="post" style="display: inline;">
                 <button class="btn btn-danger">-</button>
-                <input type="hidden" name="album_id" value="@Model.Album.Id"/>
-                <input type="hidden" name="isFor" value="False"/>
-                <input type="hidden" name="genre_id" value="@genre.GenreId"/>
+                <input type="hidden" name="album_id" value="@Model.Album.Id" />
+                <input type="hidden" name="isFor" value="False" />
+                <input type="hidden" name="genre_id" value="@genre.GenreId" />
             </form>
             @if (genre.UsersFor.Contains(@UserManager.GetUserName(User)) || genre.UsersAgainst.Contains(@UserManager.GetUserName(User)))
             {
                 <form asp-page-handler="undo" method="post" style="display: inline;">
-                    <input type="hidden" name="album_id" value="@Model.Album.Id"/>
-                <button class="btn btn-primary">Remove Vote</button>
-                <input type="hidden" name="genre_id" value="@genre.GenreId"/>
+                    <input type="hidden" name="album_id" value="@Model.Album.Id" />
+                    <button class="btn btn-primary">Remove Vote</button>
+                    <input type="hidden" name="genre_id" value="@genre.GenreId" />
                 </form>
             }
-            </div>
-            </div>
-            <hr>
+        </div>
+    </div>
+    <hr>
 }
-@if(ViewBag.GenreId.Count > 0)
+@if (ViewBag.GenreId.Count > 0)
 {
-<div class="col-6">
-<form asp-page-handler="vote" method="post">
-    <input type="hidden" name="album_id" value="@Model.Album.Id"/>
-    <input type="hidden" name="isFor" value="True"/>
-    <select name="genre_id" class="form-control" asp-items="ViewBag.GenreId"></select>  
-    <button class="btn btn-primary">Suggest New Genre</button>
-</form>
-</div>
+    <div class="col-6">
+        <form asp-page-handler="vote" method="post">
+            <input type="hidden" name="album_id" value="@Model.Album.Id" />
+            <input type="hidden" name="isFor" value="True" />
+            <select name="genre_id" class="form-control" asp-items="ViewBag.GenreId"></select>
+            <button class="btn btn-primary">Suggest New Genre</button>
+        </form>
+    </div>
 }
