@@ -27,6 +27,11 @@
                 <span asp-validation-for="UserVM.Roles" class="text-danger"></span>
             </div>
             <div class="form-group">
+                <label asp-for="UserVM.BanUserUntil" class="control-label"></label>
+                <input type="date" asp-for="UserVM.BanUserUntil" class="form-control" />
+                <span asp-validation-for="UserVM.BanUserUntil" class="text-danger"></span>
+            </div>
+            <div class="form-group">
                 <input type="submit" value="Save" class="btn btn-primary" />
             </div>
         </form>

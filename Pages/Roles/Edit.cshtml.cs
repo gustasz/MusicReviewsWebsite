@@ -20,6 +20,7 @@ namespace MusicReviewsWebsite.Pages.Roles
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
+        
 
         public EditModel(MusicContext context, UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager, SignInManager<ApplicationUser> signInManager)
         {
@@ -71,6 +72,14 @@ namespace MusicReviewsWebsite.Pages.Roles
                 else
                     await _userManager.RemoveFromRoleAsync(user, role.Name);
             }
+
+            if (UserVM.BanUserUntil != null)
+            {
+                await _userManager.SetLockoutEndDateAsync(user, UserVM.BanUserUntil);
+                await _userManager.UpdateSecurityStampAsync(user);
+            }
+
+
             return RedirectToPage("./Index");
         }
 

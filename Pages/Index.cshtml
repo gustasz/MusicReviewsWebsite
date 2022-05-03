@@ -17,7 +17,7 @@
         <p class="card-text">
             @foreach(var artist in item.Artists)
             {
-                <a asp-page="/Artists/Profile" asp-route-id=@item.Id>@Html.DisplayFor(modelItem => artist.Name)</a>
+                <a asp-page="/Artists/Profile" asp-route-id=@artist.Id>@Html.DisplayFor(modelItem => artist.Name)</a>
             }
         </p>
         <p class="card-text">@item.GetRating()</p>
@@ -27,3 +27,9 @@
   </div>        
     }
 </div>
+<h2>
+    <a asp-page="/Albums/Search" asp-route-customOrder="Best">Top 50 Best Rated Albums</a>
+</h2>
+<h2>
+    <a asp-page="/Albums/Search" asp-route-customOrder="Popular">Top 50 Most Popular Albums</a>
+</h2>

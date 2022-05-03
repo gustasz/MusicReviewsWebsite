@@ -11,9 +11,17 @@ builder.Services.AddRazorPages();
 
 builder.Services.AddDbContext<MusicContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("MusicContext")));
-builder.Services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = false)
+builder.Services.AddDefaultIdentity<ApplicationUser>(options =>
+{
+    options.SignIn.RequireConfirmedAccount = false;
+    options.Lockout.AllowedForNewUsers = true;
+})
     .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<MusicContext>();
+builder.Services.Configure<SecurityStampValidatorOptions>(options =>
+{
+    options.ValidationInterval = TimeSpan.Zero; // immediately log out user after updating user's stat
+});
 //builder.Services.AddDbContext<MusicContext>(options =>
 //    options.UseSqlServer(builder.Configuration.GetConnectionString("MusicContext")));
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();

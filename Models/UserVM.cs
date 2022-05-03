@@ -5,6 +5,7 @@
         public string Id { get; set; }
         public string Name { get; set; }
         public List<RoleInfo> Roles { get; set; }
+        public DateTimeOffset? BanUserUntil { get; set; }
     }
 
     public class RoleInfo

@@ -27,7 +27,7 @@ namespace MusicReviewsWebsite.Pages.Reviews
         [BindProperty]
         public Review Review { get; set; }
 
-        public async Task<IActionResult> OnGetAsync(int? id)
+        public async Task<IActionResult> OnGetAsync(int? id, string userId)
         {
             if (id == null)
             {
@@ -41,6 +41,20 @@ namespace MusicReviewsWebsite.Pages.Reviews
                                                        .ToListAsync();
 
             var user = await _userManager.GetUserAsync(User);
+
+            if (userId != null)
+            {
+                if (!(await _userManager.IsInRoleAsync(user, "Admin") || await _userManager.IsInRoleAsync(user, "Moderator")))
+                {
+                    return NotFound();
+                }
+                user = await _context.Users.FindAsync(userId);
+            }
+            if (user == null)
+            {
+                return NotFound();
+            }
+
             Review = albumReviewList.SingleOrDefault(a => a.ApplicationUser.Id == user.Id);
             if (Review == null)
             {
@@ -49,14 +63,28 @@ namespace MusicReviewsWebsite.Pages.Reviews
             return Page();
         }
 
-        public async Task<IActionResult> OnPostAsync(int? id)
+        public async Task<IActionResult> OnPostAsync(int? id, string userId)
         {
+            var user = await _userManager.GetUserAsync(User);
+
+            if (userId != null)
+            {
+                if(!(await _userManager.IsInRoleAsync(user,"Admin") || await _userManager.IsInRoleAsync(user, "Moderator")))
+                {
+                    return NotFound();
+                }
+                user = await _context.Users.FindAsync(userId);
+            }
+            if (user == null)
+            {
+                return NotFound();
+            }
+
             if (id == null)
             {
                 return NotFound();
             }
 
-            var user = await _userManager.GetUserAsync(User);
             Review = await _context.Review // get review by user id
                 .Include(a => a.Album) 
                 .Include(u => u.ApplicationUser)

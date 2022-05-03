@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
@@ -19,7 +20,7 @@ namespace MusicReviewsWebsite.Pages.Users
 
         public async Task<IActionResult> OnGetAsync(string name)
         {
-            ApplicationUser = await _context.Users.AsNoTracking().SingleOrDefaultAsync(u => u.UserName == name);
+            ApplicationUser = await _context.Users.AsNoTracking().SingleOrDefaultAsync(u => u.Name == name);
             if (ApplicationUser == null)
             {
                 return NotFound();

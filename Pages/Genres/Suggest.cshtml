@@ -17,14 +17,32 @@
         <b>voted for:</b> @genre.UsersFor.Count() :
         @foreach (string userFor in genre.UsersFor)
         {
-            <a><span>@userFor</span></a>
+            <a asp-page="/Users/Profile" asp-route-name="@userFor"><span>@userFor</span></a>
+            @if (User.Identity.IsAuthenticated && (User.IsInRole("Admin") || User.IsInRole("Moderator")))
+            {
+                <form asp-page-handler="undo" method="post" style="display: inline;">
+                    <input type="hidden" name="album_id" value="@Model.Album.Id" />
+                    <button class="btn btn-outline-danger">Del</button>
+                    <input type="hidden" name="userName" value="@userFor">
+                    <input type="hidden" name="genre_id" value="@genre.GenreId" />
+                </form>
+            }
         }
     </div>
     <div>
         <b>voted against:</b> @genre.UsersAgainst.Count() :
         @foreach (string userAgainst in genre.UsersAgainst)
         {
-            <a><span>@userAgainst</span></a>
+            <a asp-page="/Users/Profile" asp-route-name="@userAgainst"><span>@userAgainst</span></a>
+            @if (User.Identity.IsAuthenticated && (User.IsInRole("Admin") || User.IsInRole("Moderator")))
+            {
+                <form asp-page-handler="undo" method="post" style="display: inline;">
+                    <input type="hidden" name="album_id" value="@Model.Album.Id" />
+                    <button class="btn btn-outline-danger">Del</button>
+                    <input type="hidden" name="userName" value="@userAgainst">
+                    <input type="hidden" name="genre_id" value="@genre.GenreId" />
+                </form>
+            }
         }
     </div>
     <div>
@@ -41,7 +59,7 @@
                 <input type="hidden" name="isFor" value="False" />
                 <input type="hidden" name="genre_id" value="@genre.GenreId" />
             </form>
-            @if (genre.UsersFor.Contains(@UserManager.GetUserName(User)) || genre.UsersAgainst.Contains(@UserManager.GetUserName(User)))
+            @if (genre.UsersFor.Contains((await @UserManager.GetUserAsync(User)).Name) || genre.UsersAgainst.Contains((await @UserManager.GetUserAsync(User)).Name))
             {
                 <form asp-page-handler="undo" method="post" style="display: inline;">
                     <input type="hidden" name="album_id" value="@Model.Album.Id" />

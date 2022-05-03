@@ -72,7 +72,7 @@
                 {
                     <li class="list-group-item d-flex justify-content-between align-items-start">
                         <div class="ms-2 me-auto">
-                            <div class="fw-bold" style="display:inline-block;"><a asp-page="/Users/Profile" asp-route-name=@review.ApplicationUser.UserName>@Html.DisplayFor(modelItem => review.ApplicationUser.UserName)</a></div>
+                            <div class="fw-bold" style="display:inline-block;"><a asp-page="/Users/Profile" asp-route-name=@review.ApplicationUser.Name>@Html.DisplayFor(modelItem => review.ApplicationUser.Name)</a></div>
                             <div class="text-reset" style="display:inline-block;">@review.CreatedDate.ToString("d")</div>
                         </div>
                         <span class="badge bg-primary rounded-pill">@review.GetRating()</span>
@@ -86,7 +86,7 @@
                 {
                     <li class="list-group-item d-flex justify-content-between align-items-start">
                         <div class="ms-2 me-auto">
-                            <div class="fw-bold"><a asp-page="/Users/Profile" asp-route-name=@reviewT.ApplicationUser.UserName>@Html.DisplayFor(modelItem => reviewT.ApplicationUser.UserName)</a></div>
+                            <div class="fw-bold"><a asp-page="/Users/Profile" asp-route-name=@reviewT.ApplicationUser.Name>@Html.DisplayFor(modelItem => reviewT.ApplicationUser.Name)</a></div>
                             @Html.DisplayFor(modelItem => reviewT.Text)
                             <div class="text-reset">@reviewT.CreatedDate.ToString("d")</div>
                         </div>
@@ -123,6 +123,10 @@
                         }
                         @(reviewT.Votes.Where(i => i.IsFor == true).Count()-reviewT.Votes.Where(i => i.IsFor == false).Count())
                         <span class="badge bg-primary rounded-pill">@reviewT.GetRating()</span>
+                        @if (User.Identity.IsAuthenticated && (User.IsInRole("Admin") || User.IsInRole("Moderator")))
+                        {
+                            <a asp-page="/Reviews/Delete" asp-route-id=@Model.Album.Id asp-route-userId=@reviewT.ApplicationUser.Id class="btn btn-danger mt-1">Delete</a>
+                        }
                     </li>
                 }
             </ol>

@@ -15,18 +15,22 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
 using MusicReviewsWebsite.Models;
+using MusicReviewsWebsite.Data;
+using Microsoft.EntityFrameworkCore;
 
 namespace MusicReviewsWebsite.Areas.Identity.Pages.Account
 {
     public class LoginModel : PageModel
     {
         private readonly SignInManager<ApplicationUser> _signInManager;
+        private readonly MusicContext _context;
         private readonly ILogger<LoginModel> _logger;
 
-        public LoginModel(SignInManager<ApplicationUser> signInManager, ILogger<LoginModel> logger)
+        public LoginModel(SignInManager<ApplicationUser> signInManager, ILogger<LoginModel> logger, MusicContext context)
         {
             _signInManager = signInManager;
             _logger = logger;
+            _context = context;
         }
 
         /// <summary>
@@ -124,7 +128,13 @@ namespace MusicReviewsWebsite.Areas.Identity.Pages.Account
                 }
                 if (result.IsLockedOut)
                 {
+                    var usersLocked = await _context.Users.Where(u => u.LockoutEnd != null).ToListAsync();
+                    var user = usersLocked.FirstOrDefault(u => u.UserName == Input.Email);
                     _logger.LogWarning("User account locked out.");
+                    if (user != null)
+                    {
+                        return RedirectToPage("./Lockout", new { banLength = user.LockoutEnd.ToString() });
+                    }
                     return RedirectToPage("./Lockout");
                 }
                 else

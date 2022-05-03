@@ -3,7 +3,12 @@
 @{
 }
 
-<h1>@Html.DisplayFor(model => model.ApplicationUser.UserName)</h1>
+<h1>@Html.DisplayFor(model => model.ApplicationUser.Name)</h1>
+@if (User.Identity.IsAuthenticated && (User.IsInRole("Admin") || User.IsInRole("Moderator")))
+{
+    <a asp-page="BanUser" asp-route-userId=@Model.ApplicationUser.Id>Ban User</a>
+}
+
 <hr />
     <div class="row">
         <div class="col-6">

@@ -1,0 +1,17 @@
+﻿@page
+@model MusicReviewsWebsite.Pages.Users.BanUserModel
+@{
+}
+
+<h1>@Html.DisplayFor(model => model.ApplicationUser.Name)</h1>
+<hr />
+<form method="post">
+    <div class="form-group col-3">
+        <label class="control-label">Ban User</label>
+        <input type="date" asp-for="BanUserUntil" class="form-control" />
+        <span asp-validation-for="BanUserUntil" class="text-danger"></span>
+    </div>
+    <div class="form-group mt-1">
+        <input type="submit" value="Ban User" class="btn btn-danger" />
+    </div>
+</form>
