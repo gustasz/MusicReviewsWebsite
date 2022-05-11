@@ -14,6 +14,6 @@ namespace MusicReviewsWebsite.Models
         [DisplayName("Birth Date")]
         public DateTime? BirthDate { get; set; }
 
-        public List<Album> Albums { get; set; }
+        public List<Album> Albums { get; set; } = new List<Album>();
     }
 }
