@@ -47,8 +47,9 @@ using (var scope = app.Services.CreateScope())
 
     var context = services.GetRequiredService<MusicContext>();
     var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
+    var userManager = services.GetRequiredService<UserManager<ApplicationUser>>();
     context.Database.EnsureCreated();
-    await DbInitializer.Initialize(context,roleManager);
+    await DbInitializer.Initialize(context,roleManager,userManager);
 }
 
 app.UseHttpsRedirection();

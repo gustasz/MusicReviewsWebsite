@@ -7,11 +7,11 @@ namespace MusicReviewsWebsite.Data
 {
     public static class DbInitializer
     {
-        public static async Task Initialize(MusicContext context, RoleManager<IdentityRole> roleManager)
+        public static async Task Initialize(MusicContext context, RoleManager<IdentityRole> roleManager, UserManager<ApplicationUser> userManager)
         {
             context.Database.EnsureCreated();
 
-            // Look for any students.
+            // Look for any artists or roles
             if (context.Artist.Any() && roleManager.Roles.Any())
             {
                 return;   // DB has been seeded
@@ -29,19 +29,25 @@ namespace MusicReviewsWebsite.Data
                 };
 
                 context.Artist.AddRange(artists);
-                context.SaveChanges();
-            }
-            /*    var albums = new Album[]
+               
+
+                var albums = new Album[]
                 {
-                new Album{Name="Whole Lotta Red",ReleaseDate=DateTime.Parse("2020-12-25"),ArtistId = 1},
-                new Album{Name="Worlds",ReleaseDate=DateTime.Parse("2014-08-12"),ArtistId = 2},
-                new Album{Name="IGOR",ReleaseDate=DateTime.Parse("2019-05-17"),ArtistId = 3},
-                new Album{Name="good kid, m.A.A.d city",ReleaseDate=DateTime.Parse("2012-10-22"),ArtistId = 4},
-                new Album{Name="My Beautiful Dark Twisted Fantasy",ReleaseDate=DateTime.Parse("2010-11-22"),ArtistId = 5},
+                new Album{Name="Whole Lotta Red",ReleaseDate=DateTime.Parse("2020-12-25"),CoverPath="Images\\Album Covers\\u024fgcq.f0y.png"},
+                new Album{Name="Worlds",ReleaseDate=DateTime.Parse("2014-08-12"),CoverPath="Images\\Album Covers\\mcconegl.0xh.jpg"},
+                new Album{Name="IGOR",ReleaseDate=DateTime.Parse("2019-05-17"),CoverPath="Images\\Album Covers\\acnzpyh0.dlb.jpg"},
+                new Album{Name="good kid, m.A.A.d city",ReleaseDate=DateTime.Parse("2012-10-22"),CoverPath="Images\\Album Covers\\bvsy5oz5.f41.jpg"},
+                new Album{Name="My Beautiful Dark Twisted Fantasy",ReleaseDate=DateTime.Parse("2010-11-22"),CoverPath="Images\\Album Covers\\vcokzuut.pdh.jpg"},
                 };
 
+                for (int i = 0; i < 5; i++)
+                {
+                    albums[i].Artists.Add(artists[i]);
+                }
+
                 context.Album.AddRange(albums);
-                context.SaveChanges();*/
+                context.SaveChanges();
+            }
 
             //initialize users and roles
             if (!roleManager.Roles.Any())
@@ -50,16 +56,15 @@ namespace MusicReviewsWebsite.Data
                 await roleManager.CreateAsync(new IdentityRole("Moderator"));
             }
 
-          /*  if (!context.Users.Any())
+            if (!context.Users.Any()) // testing only, change password
             {
                 var adminUser = new ApplicationUser
                 {
-                    UserName = "admin@gmail.com",
-                    PasswordHash = "admin123" // should be hashed
+                    UserName = "admin@gmail.com"
                 };
-                context.Users.Add(adminUser);
-                context.SaveChanges();
-            }*/
+                await userManager.CreateAsync(adminUser, "Admin1!");
+                await userManager.AddToRoleAsync(adminUser, "Admin");
+            }
         }
     }
 }

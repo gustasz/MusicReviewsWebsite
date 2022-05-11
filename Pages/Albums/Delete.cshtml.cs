@@ -71,6 +71,8 @@ namespace MusicReviewsWebsite.Pages.Albums
 
             try
             {
+                var reviewList = _context.Review.Where(a => a.Album.Id == album.Id).ToList();
+                _context.Review.RemoveRange(reviewList);
                 _context.Album.Remove(album);
                 await _context.SaveChangesAsync();
                 if (album.CoverPath != Path.Combine("Images", "Temp", "defaultAlbumPicture.png") && !string.IsNullOrEmpty(album.CoverPath))
