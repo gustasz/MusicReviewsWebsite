@@ -68,6 +68,7 @@ namespace MusicReviewsWebsite.Data
             {
                 var adminUser = new ApplicationUser
                 {
+                    Name = "TheAdmin",
                     UserName = "admin@gmail.com"
                 };
                 await userManager.CreateAsync(adminUser, "Admin1!");
